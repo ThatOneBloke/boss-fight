@@ -1,15 +1,27 @@
 import pygame
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
-bossx = 100
-bossy = 400
-playerx = 400
-playery = 400
+pygame.display.set_caption("Boss fight")
+namefont = pygame.font.SysFont("Ariel", 25)
+hpnumberfont = pygame.font.SysFont("Ariel", 40)
+bossname = namefont.render("boss hp: ", True, "grey")
+bossx = 400
+bossy = 300
+playerx = 650
+playery = 450
+swordx = playerx - 24
+swordy = playery + 23
 playerhealth = 100
+bosshealth = 5000
+bosshpbarwidth = 810
 hit = False
 isjumping = False
-
-boss = pygame.Rect(bossx, bossy, 50, 50)
+hpnumber = hpnumberfont.render(str(bosshealth) + " / 5000", True, "black")
+ground = pygame.Rect(0, 500, 1000, 200)
+sword = pygame.Rect(swordx, swordy, 40, 10)
+boss = pygame.Rect(bossx, bossy, 200, 200)
+bgbosshpbar = pygame.Rect(95, 519, bosshpbarwidth, 60)
+bosshpbar = pygame.Rect(100, 525, 800, 50)
 player = pygame.Rect(playerx, playery, 30, 50)
 
 run = True
@@ -17,29 +29,27 @@ while run:
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
             run = False
-    screen.fill("grey")
-    pygame.draw.rect(screen, "green", boss)
-    pygame.draw.rect(screen, "blue", player)
-    #if not hit:
-        #if bossx < playerx:
-            #bossx += 20
-        #elif bossx > playerx:
-            #bossx -= 2
-    #if boss.colliderect(player):
-        #hit = True
-    #if hit:
-        #playerhealth -= 10
-        #if playerx <= bossx:
-            #player.x -= 20
-        #elif playerx >= bossx:
-            #player.x += 20
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
-        player.x -= 2
+        player.x -= 1
+        playerx -= 1
+        sword.x -= 1
     elif keys[pygame.K_d]:
-        player.x += 2
-    elif keys[pygame.K_SPACE]:
-        isjumping = True
-        if isjumping == True:
-            player.y -= 10
+        player.x += 1
+        playerx += 1
+        sword.x += 1
+    if keys[pygame.K_SPACE] and sword.colliderect(boss):
+        bosshealth -= 1
+    #elif keys[pygame.K_SPACE] and keys[pygame.K_LSHIFT]:
+        #if sword.colliderect(boss):
+            #bosshealth -= 50
+    screen.fill("grey")
+    pygame.draw.rect(screen, "black", ground)
+    pygame.draw.rect(screen, "grey", bgbosshpbar)
+    screen.blit(bossname, (470, 500))
+    pygame.draw.rect(screen, "red", bosshpbar)
+    screen.blit(hpnumber, (430, 540))
+    pygame.draw.rect(screen, "red", boss)
+    pygame.draw.rect(screen, "green", player)
+    pygame.draw.rect(screen, "blue", sword)
     pygame.display.update()
